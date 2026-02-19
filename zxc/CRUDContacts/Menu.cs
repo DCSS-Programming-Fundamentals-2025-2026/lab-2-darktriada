@@ -16,6 +16,9 @@ public class Menu
             Console.WriteLine("5. Сортувати за ім'ям");
             Console.WriteLine("6. Зберегти у файл");
             Console.WriteLine("7. Зчитати з файла");
+            Console.WriteLine("8. Swap Sort (за ім'ям)");
+            Console.WriteLine("9. Swap Sort (за телефоном)");
+            Console.WriteLine("10. Swap Stats");
             Console.WriteLine("0. Вихід");
 
             string choice = Console.ReadLine();
@@ -47,6 +50,18 @@ public class Menu
             else if (choice == "7")
             {
                 ReadFileUI();
+            }
+            else if (choice == "8")
+            {
+            manager.SortDefaultSwap();
+            }
+            else if (choice == "9")
+            {
+            manager.SortPhoneSwap();
+            }
+            else if (choice == "10")
+            {
+            manager.StatsSwap();
             }
             else if (choice == "0")
             {

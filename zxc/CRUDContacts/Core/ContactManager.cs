@@ -1,4 +1,7 @@
 using CRUDContacts.Entities;
+using System.Collections;
+using CRUDContacts.Comparers;
+
 namespace CRUDContacts.Core;
 
 public class ContactManager
@@ -28,6 +31,7 @@ public class ContactManager
 
         Contacts[count] = contact;
         count++;
+
         return true;
     }
 
@@ -37,7 +41,7 @@ public class ContactManager
 
         for (int i = 0; i < count; i++)
         {
-            if (Contacts[i].MatchesQuery(query) == true)
+            if (Contacts[i].MatchesQuery(query))
             {
                 Console.WriteLine($"Контакт знайдено:{Contacts[i]}");
                 found = true;
@@ -123,7 +127,47 @@ public class ContactManager
         {
             for (int i = 0; i < count; i++)
             {
-                writer.WriteLine(Contacts[i].Name + "-" + Contacts[i].PhoneNumber + " " + Contacts[i].CreateTime);
+                writer.WriteLine(Contacts[i].Name + "-" +
+                                 Contacts[i].PhoneNumber + " " +
+                                 Contacts[i].CreateTime);
+            }
+        }
+    }
+
+    public void ReadFile(string fileName)
+    {
+        using (StreamReader reader = new StreamReader(fileName))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                try
+                {
+                    string[] first = line.Split('-', 2);
+
+                    if (first.Length >= 2)
+                    {
+                        string name = first[0];
+                        string rest = first[1];
+
+                        string[] second = rest.Split(' ', 2);
+
+                        if (second.Length >= 2)
+                        {
+                            string phone = second[0];
+                            string dateString = second[1];
+
+                            DateTime date = DateTime.Parse(dateString);
+                            AddContact(name, phone, date);
+                        }
+                    }
+                }
+                catch
+                {
+                }
             }
         }
     }
@@ -141,43 +185,57 @@ public class ContactManager
         Contacts = newArray;
     }
 
-    public void ReadFile(string fileName)
+    private ContactCollection? swapCollection = null;
+
+    public ContactCollection GetSwapCollection()
     {
-        using (StreamReader reader = new StreamReader(fileName))
+        if (swapCollection == null)
         {
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            swapCollection = new ContactCollection();
+
+            for (int i = 0; i < count; i++)
             {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    string[] first = line.Split('-', 2);
-
-                    if (first.Length >= 2)
-                    {
-                        string name = first[0];
-                        string rest = first[1];
-
-                        string[] second = rest.Split(' ', 2);
-                        if (second.Length >= 2)
-                        {
-                            string phone = second[0];
-                            string dateString = second[1];
-
-                            DateTime date = DateTime.Parse(dateString);
-                            AddContact(name, phone, date);
-                        }
-                    }
-                }
-                catch
-                {
-                    
-                }
+                swapCollection.Add(Contacts[i]);
             }
         }
+
+        return swapCollection;
+    }
+
+    public void SortDefaultSwap()
+    {
+        var col = GetSwapCollection();
+        col.SortDefault();
+        Console.WriteLine("Swap: Відсортовано за ім'ям (IComparable)");
+    }
+
+    public void SortPhoneSwap()
+    {
+        var col = GetSwapCollection();
+        col.SortWithComparer(new ContactPhoneComparer());
+        Console.WriteLine("Swap: Відсортовано за телефоном (IComparer)");
+    }
+
+    public void StatsSwap()
+    {
+        Console.WriteLine($"Кількість контактів: {count}");
+
+        if (count == 0)
+            return;
+
+        DateTime min = Contacts[0].CreateTime;
+        DateTime max = Contacts[0].CreateTime;
+
+        for (int i = 1; i < count; i++)
+        {
+            if (Contacts[i].CreateTime < min)
+                min = Contacts[i].CreateTime;
+
+            if (Contacts[i].CreateTime > max)
+                max = Contacts[i].CreateTime;
+        }
+
+        Console.WriteLine($"Найстаріший контакт: {min}");
+        Console.WriteLine($"Найновіший контакт: {max}");
     }
 }

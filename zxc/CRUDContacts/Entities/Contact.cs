@@ -1,28 +1,53 @@
-using CRUDContacts.Core;
-namespace CRUDContacts.Entities;
+using System;
 
-public class Contact : PersonRecord, IMatchable
+namespace CRUDContacts.Entities
 {
-    public DateTime CreateTime { get; set; }
-    public string PhoneNumber { get; set; }
-    public Contact(string name, string phoneNumber) : base(name)
+    public class Contact : IComparable
     {
-        PhoneNumber = phoneNumber;
-        CreateTime = DateTime.Now;
-    }
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public DateTime CreateTime { get; set; }
 
-    public bool MatchesQuery(string query)
-    {
-        if (query.Contains(PhoneNumber) || query.Contains(Name))
+        public string PhoneNumber
         {
-            return true;
+            get => Phone;
+            set => Phone = value;
         }
 
-        return false;
-    }
 
-    public override string ToString()
-    {
-        return $"Ім'я: {Name}, Телефон: {PhoneNumber}, Дата: {CreateTime}";
+        public Contact(string name, string phone)
+        {
+            Name = name;
+            Phone = phone;
+            CreateTime = DateTime.Now;
+        }
+
+        public Contact(string name, string phone, DateTime createTime)
+        {
+            Name = name;
+            Phone = phone;
+            CreateTime = createTime;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null) return 1;
+
+            if (obj is not Contact other)
+                throw new ArgumentException("Object is not Contact");
+
+            return string.Compare(Name, other.Name, StringComparison.Ordinal);
+        }
+
+        public bool MatchesQuery(string query)
+        {
+            return Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                   Phone.Contains(query, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override string ToString()
+        {
+            return $"{Name};{Phone}";
+        }
     }
 }

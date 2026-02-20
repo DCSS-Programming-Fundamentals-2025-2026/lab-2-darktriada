@@ -1,1 +1,14 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/ARgxkcrJ)
+Хто QA / хто Core:
+QA - Ляшок Катерина
+Core - Борисенко-Линник Володимир
+Як запускати тести:
+Перейти в папку CRUDContacts.Tests та запустити тести командою в консолі dotnet test
+Як перевірити: List через enumerator, Sort default, Sort альтернативне, Stats:
+IEnumerator (List через enumerator):
+Реалізований у кастомному класі ContactEnumerator. Він працює в ContactCollection і робить колекцію ітерабельною. Це забезпечує можливість зручного та безпечного перебору списку контактів (наприклад, за допомогою циклів foreach) без прямого доступу до внутрішнього масиву.
+IComparable (Sort default):
+Оберіть пункт 8 (Swap Sort за ім'ям). Колекція відсортується за алфавітом (за іменами), використовуючи вбудований у клас Contact метод CompareTo.
+IComparer (Sort альтернативне):
+Оберіть пункт 9 (Swap Sort за телефоном). Колекція відсортується за номерами телефонів завдяки переданому кастомному компаратору ContactPhoneComparer.
+Статистика (Stats):
+Оберіть пункт 10 (Swap Stats). Програма виведе загальну кількість збережених контактів, а також покаже найстаріший та найновіший запис на основі часу їхнього створення.
